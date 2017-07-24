@@ -1,4 +1,4 @@
-#**Traffic Sign Recognition** 
+# Traffic Sign Recognition
 
 
 ---
@@ -28,10 +28,10 @@ The goals / steps of this project are the following:
 [image11]: ./Dataset_label_density.png "Data set label distribution"
 
 ## Rubric Points
-###Here I will consider the [rubric points](https://review.udacity.com/#!/rubrics/481/view) individually and describe how I addressed each point in my implementation.  
+### Here I will consider the [rubric points](https://review.udacity.com/#!/rubrics/481/view) individually and describe how I addressed each point in my implementation.  
 
 ---
-###Data Set Summary & Exploration
+### Data Set Summary & Exploration
 
 I used the pandas library to calculate summary statistics of the traffic
 signs data set:
@@ -42,16 +42,16 @@ signs data set:
 * The shape of a traffic sign image is (32, 32, 3)
 * The number of unique classes/labels in the data set is 43
 
-####2. Include an exploratory visualization of the dataset.
+#### 2. Include an exploratory visualization of the dataset.
 
 There are 43 classes and they are not uniformly distributed within each data set. For example, label number 1 and 2 appear more often than label 0. But we see that the three sets, train, validation, and test, share roughly the identical distribution.
 
 ![alt text][image10]
 ![alt text][image11]
 
-###Design and Test a Model Architecture
+### Design and Test a Model Architecture
 
-####1. Preprocessing
+#### 1. Preprocessing
 
 As a first step, I decided to convert the images to YUV scale instead of RGB, then I normalized the Y factor and used raw and V coordinates as the [reference](yann.lecun.com/exdb/publis/pdf/sermanet-ijcnn-11.pdf) showed. Indeed, Y factor is the most dominant factor among 3 as we see in the following example, and so it makes sense to normalize Y factor.
 
@@ -65,7 +65,7 @@ Y factor from YUV scale
 ![alt text][image2]
 
 
-####2. Model Architecture 
+#### 2. Model Architecture 
 
 My final model consisted of the following layers:
 
@@ -86,7 +86,7 @@ My final model consisted of the following layers:
 | Softmax				| Cross Entropy optimization   					|
 
 
-####3. Model Training 
+#### 3. Model Training 
 
 To train the model, I used the following parameters and estimators.
 
@@ -97,7 +97,7 @@ To train the model, I used the following parameters and estimators.
  * drop probability in dropbout: 0.5 
 
 
-####4. Discussion
+#### 4. Discussion
 
 My final model results were:
  * training set accuracy of 1.0
@@ -131,9 +131,9 @@ I increased the filter depth as well as the size of fully conntected layers beca
 
 I also added DROPOUT to prevent overfitting.
 
-###Test a Model on New Images
+### Test a Model on New Images
 
-####1. New Images
+#### 1. New Images
 Here are five German traffic signs that I found on the web:
 
 ![alt text][image4] ![alt text][image5] ![alt text][image6] 
@@ -141,7 +141,7 @@ Here are five German traffic signs that I found on the web:
 
 The last image might be difficult to classify because there is another cropped sign under the main sign. Moreover, the picture of a car and slippery road is relatively complicated looking.
 
-####2. Discuss the model's predictions on these new traffic signs.
+#### 2. Discuss the model's predictions on these new traffic signs.
 
 Here are the results of the prediction:
 
@@ -157,7 +157,7 @@ Here are the results of the prediction:
 
 The model was able to correctly guess 4 of the 5 traffic signs, which gives an accuracy of 80%. This looks low compared to the accuracy on the test set of 0.965, but we need to note that there are only 5 samples in this new set.
 
-####3. Model Prediction in Detail
+#### 3. Model Prediction in Detail
 
 
 | Probability         	|     Prediction	        					| 
