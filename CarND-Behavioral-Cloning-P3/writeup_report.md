@@ -98,7 +98,7 @@ I then recorded the vehicle recovering from the left side and right sides of the
 
 ![recovery from left side of the lane][image3]
 ![recovery from right side of the lane][image4]
-![alt text][image5]
+
 
 To augment the data sat, I also flipped images and angles thinking that this would have the effect of gathering data as if the driving was done in the reverse orientation. For example, here is an image that has then been flipped:
 
