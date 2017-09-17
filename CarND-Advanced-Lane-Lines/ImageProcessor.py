@@ -5,9 +5,22 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import glob
 from numpy.linalg import inv
+
+
 # Calibrate Camera
 def calibrateCamera(image_path ='camera_cal/calibration*.jpg',
                      nx=9, ny=6, image_shape=(720, 1280)):
+    """
+    this function calibrates camera distortion parameters
+    by reading the chessboard images in the image_path
+        
+    :param image_path : chessboards image path
+    :param nx : number of grids in x-driection
+    :param ny : number of grids in y-direction
+    :param image_shape : shape of input images  
+    
+    :returns: ret, mtx, dist, rvecs, tvecs
+    """
 
     # Read in an image
     images = glob.glob(image_path)
@@ -31,7 +44,14 @@ def calibrateCamera(image_path ='camera_cal/calibration*.jpg',
 
 # Undistort Images using Camera Calibration results
 def undistortImage(img, ret, mtx, dist):
-    """ undistort image """
+    """ 
+    undistort image
+
+    :param img : distorted image
+    :param ret, mtx, dist : results from calibrateCamera()
+
+    :returns: corrected, distortion-free image
+    """
     undistorted = cv2.undistort(img, mtx, dist, None, mtx)
     return undistorted
 
@@ -39,6 +59,22 @@ def undistortImage(img, ret, mtx, dist):
 # Gradient & Color Threshold 
 def imageThresholding(img, s_thresh=(10, 255), h_thresh=(15, 100),
                       sx_thresh=(20, 100), sy_thresh=(100, 100)):
+    """
+    This function takes a distortion-free image and applies
+    color channel conversion and Sobel-x, Sobel-y gradient.
+    Once these are applied, we take pixels within the specified
+    threshold ranges, and convert the original image into
+    binary image.
+
+    :param img : distortion-free image
+    :param s_thresh : HSL color channel S-channel threshold
+    :param h_thresh : HSL color channel H-channel threshold
+    :param sx_thresh: gradient value (Sobel-x) threshold
+    :param sy_thresh: gradient value (Sobel-y) threshold
+
+    :returns: combined_binary, pixels selected after thresholding
+
+    """
     img = np.copy(img)
     # Convert to HLS color space and separate the V channel
     hsv = cv2.cvtColor(img, cv2.COLOR_RGB2HLS).astype(np.float)
@@ -83,6 +119,14 @@ def imageThresholding(img, s_thresh=(10, 255), h_thresh=(15, 100),
 
 # Persepective Transform
 def transformMatrix():
+    """
+    Find conversion between source region (src) and destination region(dst).
+
+    :returns: 
+        M : conversion matrix, numpy.array
+        Minv : inverse matrix, numpy.array
+    """
+
     src = np.float32([[220, 700], [530, 500], [790, 500], [1100,700]])
     dst = np.float32([[220, 700], [220, 450], [1100, 450], [1100, 700]])
     M = cv2.getPerspectiveTransform(src, dst)
@@ -90,6 +134,14 @@ def transformMatrix():
     return M, Minv
 
 def warper(img, M):
+    """
+    Converts img to bird-eye view image.
+
+    :param img : original image, numpy array
+    :param M : conversion matrix, numpy array
+
+    :returns: warped image
+    """
     # Compute and apply perpective transform
     img_size = (img.shape[1], img.shape[0])
     warped = cv2.warpPerspective(img, M, img_size, flags=cv2.INTER_NEAREST)  # keep same size as input image
