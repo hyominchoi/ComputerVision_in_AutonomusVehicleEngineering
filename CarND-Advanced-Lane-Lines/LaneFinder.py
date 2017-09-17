@@ -4,8 +4,15 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import glob
+import ImageProcessor
 
 class Lane():
+    """ 
+    This is a class that keeps track of important parameters within one video clip
+    There are following methods
+    * LaneCalibration : find lane curves given an input image 
+    * visualizeLane : visualize curves on top of the original image  
+    """
     def __init__(self):
 
         # parameters used for window sliding lane finding method
@@ -38,12 +45,28 @@ class Lane():
         #y values for detected line pixels
         self.ally = None
 
+    def setTransformMatrix(self):
+        """ 
+        sets perspective transform matrix M and inverse of M, Minv
+        """
+        if self.M is not None:
+            print("over-writing already existing value M")
+
+        M, Minv = ImageProcessor.transformMatrix()
 
     def initialLaneCalibration(self, binary_warped):
         """
-        it reads the image, binary_warped, and finds the lane curves
-        :param np.array bainary_warped : 2D-np.array of 0 and 1s
-        return left_fit, right_fit, leftx, lefty, rightx, righty
+        it reads the image, binary_warped, and finds the lane curves.
+        We express left and right lanes by polynomial equations of degree 2,
+        so after we finds the lane curve pixels, we fit two polynomial function
+        for left and right lanes. 
+        
+        :param bainary_warped : 2D-np.array of 0 and 1s
+        
+        :returns: 
+        left_fit (left lane curve coefficients), 
+        right_fit(right lane curve coefficients),
+        leftx, lefty, rightx, righty (left and right lane pixels)
         """
         nwindows = self.nwindows
         margin = self.margin
@@ -117,8 +140,13 @@ class Lane():
         it reads the image, binary_warped, and finds the lane curves
         unlike initialize lane calibration, this function assums that
         lane.left_fit and right_fit are not None, i.e. already found
-        :param np.array bainary_warped : 2D-np.array of 0 and 1s
-        return left_fit, right_fit, leftx, lefty, rightx, righty
+        
+        :param bainary_warped : 2D-np.array of 0 and 1s
+        
+        :returns:
+        left_fit (left lane curve coefficients), 
+        right_fit(right lane curve coefficients),
+        leftx, lefty, rightx, righty (left and right lane pixels)
         """
         margin = self.margin
         left_fit = self.left_fit
@@ -153,18 +181,20 @@ class Lane():
     
     def LaneCalibration(self, binary_warped):
         """
-        it reads the image, binary_warped, and finds the lane curves
-        unlike initialize lane calibration, this function assums that
-        lane.left_fit and right_fit are not None, i.e. already found
-        :param np.array bainary_warped : 2D-np.array of 0 and 1s
-        return left_fit, right_fit, leftx, lefty, rightx, righty
-        """
+        It reads the image, binary_warped, and finds the lane curves
+        Depending on self.detected value, it either calls initial or update LaneCalibration()
         
+        :param bainary_warped : 2D-np.array of 0 and 1s
+        
+        :returns: left_fit, right_fit, leftx, lefty, rightx, righty
+        """
         if (self.detected):
-            left_fit, right_fit, leftx, lefty, rightx, righty = self.updateLaneCalibration(binary_warped)
+            output = self.updateLaneCalibration(binary_warped)
 
         else:
-            left_fit, right_fit, leftx, lefty, rightx, righty = self.initialLaneCalibration(binary_warped)
+            output = self.initialLaneCalibration(binary_warped)
+
+        left_fit, right_fit, leftx, lefty, rightx, righty = output
 
         self.diffs = np.vstack((left_fit - self.left_fit, 
                                 right_fit - self.right_fit))
@@ -175,7 +205,11 @@ class Lane():
         self.allx = [leftx, rightx]
         self.ally = [lefty, righty]
 
-    def computeCurvature(self):
+    def computeCurvatureRadius(self):
+        """ 
+        this function computes Radius of Curvature, 
+        provided that left_fit and right_fit are already found
+        """
 
         y_eval= max(self.ally)
         left_fit = self.left_fit
@@ -186,19 +220,25 @@ class Lane():
         self.radius_of_curvature = [left_curvature, right_curvature]
         return
 
-    def visualizeLane(self, binary_warped, original_img): 
+    def visualizeLane(self, original_img): 
+        """
+        this method stacks the colored region of lanes givien the original image
+
+        :param original_img: 2D numpy image, numpy array
+        
+        :returns: the stacked image
+        """
         left_fit = self.left_fit
         right_fit = self.right_fit
         Minv = self.Minv
 
-        warped = binary_warped
         image = original_img
         # Create an image to draw the lines on
-        warp_zero = np.zeros_like(warped).astype(np.uint8)
+        warp_zero = np.zeros_like(image[:,:,0]).astype(np.uint8)
         color_warp = np.dstack((warp_zero, warp_zero, warp_zero))
-        
+        color_warp_lane = np.dstack((warp_zero, warp_zero, warp_zero))
         # Generate x and y values for plotting
-        ploty = np.linspace(0, binary_warped.shape[0]-1, binary_warped.shape[0])
+        ploty = np.linspace(0, image.shape[0]-1, original_img.shape[0])
         left_fitx = left_fit[0]*ploty**2 + left_fit[1]*ploty + left_fit[2]
         right_fitx = right_fit[0]*ploty**2 + right_fit[1]*ploty + right_fit[2]
 
@@ -209,12 +249,10 @@ class Lane():
 
         # Draw the lane onto the warped blank image
         cv2.fillPoly(color_warp, np.int_([pts]), (0,255, 0))
-        
-        # TO DO: Draw the lanes in color, width 10 pixels
 
         # Warp the blank back to original image space using inverse perspective matrix (Minv)
         newwarp = cv2.warpPerspective(color_warp, Minv, (image.shape[1], image.shape[0])) 
         # Combine the result with the original image
         result = cv2.addWeighted(image, 1, newwarp, 0.3, 0)
 
-        return result
+        return result, pts_left, pts_right
