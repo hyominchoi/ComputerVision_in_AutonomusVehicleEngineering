@@ -52,7 +52,13 @@ class Lane():
         if self.M is not None:
             print("over-writing already existing value M")
 
-        M, Minv = ImageProcessor.transformMatrix()
+        self.M, self.Minv = ImageProcessor.transformMatrix()
+
+    def reset(self):
+        """ 
+        ignore the previous calibration
+        """
+        self.detected = False
 
     def initialLaneCalibration(self, binary_warped):
         """
@@ -61,7 +67,7 @@ class Lane():
         so after we finds the lane curve pixels, we fit two polynomial function
         for left and right lanes. 
         
-        :param bainary_warped : 2D-np.array of 0 and 1s
+        :param binary_warped : 2D-np.array of 0 and 1s
         
         :returns: 
         left_fit (left lane curve coefficients), 
@@ -141,7 +147,7 @@ class Lane():
         unlike initialize lane calibration, this function assums that
         lane.left_fit and right_fit are not None, i.e. already found
         
-        :param bainary_warped : 2D-np.array of 0 and 1s
+        :param binary_warped : 2D-np.array of 0 and 1s
         
         :returns:
         left_fit (left lane curve coefficients), 
@@ -184,7 +190,7 @@ class Lane():
         It reads the image, binary_warped, and finds the lane curves
         Depending on self.detected value, it either calls initial or update LaneCalibration()
         
-        :param bainary_warped : 2D-np.array of 0 and 1s
+        :param binary_warped : 2D-np.array of 0 and 1s
         
         :returns: left_fit, right_fit, leftx, lefty, rightx, righty
         """
@@ -205,13 +211,17 @@ class Lane():
         self.allx = [leftx, rightx]
         self.ally = [lefty, righty]
 
+        # update vehicle position from the Center of the lane
+        self.updateVehicleCenter()
+        
+
     def computeCurvatureRadius(self):
         """ 
         this function computes Radius of Curvature, 
         provided that left_fit and right_fit are already found
         """
 
-        y_eval= max(self.ally)
+        y_eval= max(self.ally[0])
         left_fit = self.left_fit
         right_fit = self.right_fit
         left_curvature = ((1 + (2*left_fit[0]*y_eval + left_fit[1])**2)**1.5) / np.absolute(2*left_fit[0])
@@ -246,7 +256,7 @@ class Lane():
         pts_left = np.array([np.transpose(np.vstack([left_fitx, ploty]))])
         pts_right = np.array([np.flipud(np.transpose(np.vstack([right_fitx, ploty])))])
         pts = np.hstack((pts_left, pts_right))
-
+        
         # Draw the lane onto the warped blank image
         cv2.fillPoly(color_warp, np.int_([pts]), (0,255, 0))
 
@@ -255,4 +265,28 @@ class Lane():
         # Combine the result with the original image
         result = cv2.addWeighted(image, 1, newwarp, 0.3, 0)
 
-        return result, pts_left, pts_right
+        # add text representing vehicle position
+
+        t = cv2.putText(result,
+                "vehicle position from center : " + str(round(self.line_base_pos, 2)) + " (m)", 
+                (100, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,0), 2, cv2.LINE_AA)
+        return result
+
+
+    def updateVehicleCenter(self, image_shape=(720, 1280), car_bottom_height=20):
+        """
+        compute vehicle center when image resolution is 1280 x 720, 
+        which means 1 pixels corresponds to 0.0037 (m).  
+        :param image_shape: shape of image
+        :param car_bottom_height : car part of the image in the bottom
+
+        updates self.line_base_pos
+        """
+        y_eval= image_shape[0] - car_bottom_height
+        left_fit = self.left_fit
+        right_fit = self.right_fit
+        left_base_pt = left_fit[0]*y_eval**2 + left_fit[1]*y_eval + left_fit[2]
+        right_base_pt = right_fit[0]*y_eval**2 + right_fit[1]*y_eval + right_fit[2]
+        self.line_base_pos = (left_base_pt + right_base_pt - image_shape[1]) / 2 * 0.0037
+        return
+       

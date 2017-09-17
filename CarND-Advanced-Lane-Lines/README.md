@@ -1,5 +1,5 @@
 ## Advanced Lane Finding Project
---
+---
 
 The goals / steps of this project are the following:
 
@@ -83,7 +83,7 @@ I fit my lane lines with a 2nd order polynomial using the window sliding methods
 
 #### 5. Describe how (and identify where in your code) you calculated the radius of curvature of the lane and the position of the vehicle with respect to center.
 
-
+After I fit each lane to a polynomial of degree 2, the methods `computeCurvatureRadius()` and `updateVehicleCenter()`in `LaneFinder.py` compute the radii of curvature of the lanes and the position of the vehicle, respectively.
 
 #### 6. Provide an example image of your result plotted back down onto the road such that the lane area is identified clearly.
 
@@ -97,7 +97,7 @@ I implemented this step in lines # through # in `LaneFinder.py` in the function 
 
 #### 1. Provide a link to your final video output.  Your pipeline should perform reasonably well on the entire project video (wobbly lines are ok but no catastrophic failures that would cause the car to drive off the road!).
 
-Here's a [link to my video result](./project_video_test.mp4)
+Here's a [link to my video result](https://youtu.be/HzaR7m0Hk6A)
 
 ---
 

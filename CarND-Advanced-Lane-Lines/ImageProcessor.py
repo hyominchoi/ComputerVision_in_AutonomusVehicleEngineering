@@ -57,7 +57,7 @@ def undistortImage(img, ret, mtx, dist):
 
 
 # Gradient & Color Threshold 
-def imageThresholding(img, s_thresh=(10, 255), h_thresh=(15, 100),
+def imageThresholding(img, s_thresh=(100, 255), h_thresh=(15, 100),
                       sx_thresh=(20, 100), sy_thresh=(100, 100)):
     """
     This function takes a distortion-free image and applies
@@ -127,8 +127,8 @@ def transformMatrix():
         Minv : inverse matrix, numpy.array
     """
 
-    src = np.float32([[220, 700], [530, 500], [790, 500], [1100,700]])
-    dst = np.float32([[220, 700], [220, 450], [1100, 450], [1100, 700]])
+    src = np.float32([[180, 700], [490, 500], [790, 500], [1100,700]])
+    dst = np.float32([[180, 700], [180, 450], [1100, 450], [1100, 700]])
     M = cv2.getPerspectiveTransform(src, dst)
     Minv = inv(M)
     return M, Minv
