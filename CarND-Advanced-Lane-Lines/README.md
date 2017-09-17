@@ -105,4 +105,6 @@ Here's a [link to my video result](https://youtu.be/HzaR7m0Hk6A)
 
 #### 1. Briefly discuss any problems / issues you faced in your implementation of this project.  Where will your pipeline likely fail?  What could you do to make it more robust?
 
-Here I'll talk about the approach I took, what techniques I used, what worked and why, where the pipeline might fail and how I might improve it if I were going to pursue this project further.  
+First of all, the current way of estimating the vehicle's position with respect to center of the lane is not accurate enough as it uses the position of fitted curves and assumes that 1 pixel corresponds to 3.7 mm. 
+
+The current method would probably not so robust in rain and/or in different types of road (i.e. with other buildings around with narrow lanes).
