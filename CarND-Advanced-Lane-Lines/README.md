@@ -105,6 +105,8 @@ Here's a [link to my video result](https://youtu.be/5uLRnO21Kq8)
 
 #### 1. Briefly discuss any problems / issues you faced in your implementation of this project.  Where will your pipeline likely fail?  What could you do to make it more robust?
 
-First of all, the current way of estimating the vehicle's position with respect to center of the lane is not accurate enough as it uses the position of fitted curves and assumes that 1 pixel corresponds to 3.7 mm. 
+First of all, the current way of estimating the vehicle's position with respect to center of the lane is not accurate enough as it uses the position of fitted curves and assumes that 920 pixel corresponds to 3.7 m.
+
+We can also see from the result that computed value of radius of curvature fluctuates a lot, even though I use average of radii values from 10 consecutive frames. To obtain more reliable value, I can try to use reproduced (synthesized) pixel positions as demonstrated in the lecture, as opposed to detected lane pixels from raw image.
 
 The current method would probably not so robust in rain and/or in different types of road (i.e. with other buildings around with narrow lanes).
