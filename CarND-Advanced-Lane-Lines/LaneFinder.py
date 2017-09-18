@@ -34,8 +34,8 @@ class Lane():
         self.bestx = None     
         #polynomial coefficients averaged over the last n iterations
         self.best_fit = None
-        #radius of curvature of the line in some units
-        self.radius_of_curvature = None 
+        #radius of curvature of the line in meters
+        self.radius_of_curvature = np.array([0. for i in range(10)], dtype='float')
         #distance in meters of vehicle center from the line
         self.line_base_pos = None 
         #difference in fit coefficients between last and new fits
@@ -44,6 +44,12 @@ class Lane():
         self.allx = None  
         #y values for detected line pixels
         self.ally = None
+
+        # Define conversions in x and y from pixels space to meters
+        self.ym_per_pix = 35/720 # meters per pixel in y dimension
+        self.xm_per_pix = 3.7/950 # meters per pixel in x dimension
+        # number of frame lane has processed mod 10 (=n)
+        self.num_frame = 0
 
     def setTransformMatrix(self):
         """ 
@@ -59,6 +65,8 @@ class Lane():
         ignore the previous calibration
         """
         self.detected = False
+        self.num_frame = 0
+        self.best_fit = None
 
     def initialLaneCalibration(self, binary_warped):
         """
@@ -210,24 +218,42 @@ class Lane():
         self.right_fit = right_fit
         self.allx = [leftx, rightx]
         self.ally = [lefty, righty]
+        self.num_frame = int((self.num_frame + 1) % 10)
 
         # update vehicle position from the Center of the lane
         self.updateVehicleCenter()
+        self.computeCurvatureRadius()
         
-
-    def computeCurvatureRadius(self):
+    def computeCurvatureRadius(self, image_shape=(720, 1280)):
         """ 
         this function computes Radius of Curvature, 
         provided that left_fit and right_fit are already found
         """
-
-        y_eval= max(self.ally[0])
-        left_fit = self.left_fit
-        right_fit = self.right_fit
-        left_curvature = ((1 + (2*left_fit[0]*y_eval + left_fit[1])**2)**1.5) / np.absolute(2*left_fit[0])
-        right_curvature = ((1 + (2*right_fit[0]*y_eval + right_fit[1])**2)**1.5) / np.absolute(2*right_fit[0])
         
-        self.radius_of_curvature = [left_curvature, right_curvature]
+        # Define conversions in x and y from pixels space to meters
+        ym_per_pix = self.ym_per_pix
+        xm_per_pix = self.xm_per_pix
+
+        leftx = self.allx[0]
+        rightx = self.allx[1]
+
+        lefty = self.ally[0]
+        righty = self.ally[1]
+
+        # Fit new polynomials to x,y in world space
+        left_fit_cr = np.polyfit(lefty*ym_per_pix, leftx*xm_per_pix, 2)
+        right_fit_cr = np.polyfit(righty*ym_per_pix, rightx*xm_per_pix, 2)
+        
+        y_eval = image_shape[0]
+
+        
+
+        # Calculate the new radii of curvature
+        left_curverad = ((1 + (2*left_fit_cr[0]*y_eval*ym_per_pix + left_fit_cr[1])**2)**1.5) / np.absolute(2*left_fit_cr[0])
+        right_curverad = ((1 + (2*right_fit_cr[0]*y_eval*ym_per_pix + right_fit_cr[1])**2)**1.5) / np.absolute(2*right_fit_cr[0])
+                
+        self.radius_of_curvature[self.num_frame] = (left_curverad + right_curverad)/2
+
         return
 
     def visualizeLane(self, original_img): 
@@ -265,28 +291,30 @@ class Lane():
         # Combine the result with the original image
         result = cv2.addWeighted(image, 1, newwarp, 0.3, 0)
 
-        # add text representing vehicle position
-
+        # average of non-zero positive radii of curvature 
+        avg_radius_of_curvature = (self.radius_of_curvature[self.radius_of_curvature > 0.]).mean()
+        # add text representing vehicle position and radius of curvature
         t = cv2.putText(result,
-                "vehicle position from center : " + str(round(self.line_base_pos, 2)) + " (m)", 
+                "radius_of_curvature : " + str(int(avg_radius_of_curvature)) + " (m)",
                 (100, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,0), 2, cv2.LINE_AA)
+        t = cv2.putText(result, 
+                "vehicle position from center : " + str(round(self.line_base_pos, 2)) + " (m)", 
+                (100, 140), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,0), 2, cv2.LINE_AA)
         return result
 
-
-    def updateVehicleCenter(self, image_shape=(720, 1280), car_bottom_height=20):
+    def updateVehicleCenter(self, image_shape=(720, 1280)):
         """
         compute vehicle center when image resolution is 1280 x 720, 
         which means 1 pixels corresponds to 0.0037 (m).  
         :param image_shape: shape of image
-        :param car_bottom_height : car part of the image in the bottom
 
         updates self.line_base_pos
         """
-        y_eval= image_shape[0] - car_bottom_height
+        y_eval= image_shape[0] 
         left_fit = self.left_fit
         right_fit = self.right_fit
         left_base_pt = left_fit[0]*y_eval**2 + left_fit[1]*y_eval + left_fit[2]
         right_base_pt = right_fit[0]*y_eval**2 + right_fit[1]*y_eval + right_fit[2]
-        self.line_base_pos = (left_base_pt + right_base_pt - image_shape[1]) / 2 * 0.0037
+        self.line_base_pos = (left_base_pt + right_base_pt - image_shape[1]) / 2 * self.xm_per_pix
         return
        
