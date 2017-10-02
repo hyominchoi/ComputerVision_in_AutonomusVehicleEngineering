@@ -322,5 +322,4 @@ class Detector():
                                   (xbox_left+win_draw+xstart,ytop_draw+win_draw+ystart),
                                   (0,0,255),6) 
                 
-
         return  draw_img
