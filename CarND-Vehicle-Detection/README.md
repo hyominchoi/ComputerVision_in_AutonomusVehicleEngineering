@@ -46,7 +46,7 @@ I tried various combinations of parameters and realized that HOG parameters extr
 
 #### 3. Describe how (and identify where in your code) you trained a classifier using your selected HOG features (and color features if you used them).
 
-I trained a linear SVM using HLS color histogram with `hist_bins = 32` along with HOG features with parameters given above. I decided not to use `spatial_histogram` as SVM model's accuracy was greater than 98% without the spatial hisgoram.
+I trained a linear SVM using HLS color histogram with `hist_bins = 32` along with HOG features with parameters given above. I decided not to use `spatial_histogram` as SVM model's accuracy was greater than 98% without the spatial histogram.
 
 ### Sliding Window Search
 
@@ -71,6 +71,7 @@ Here's a link to my video result: https://youtu.be/Y8ZW24tdE7g
 
 #### 2. Describe how (and identify where in your code) you implemented some kind of filter for false positives and some method for combining overlapping bounding boxes.
 
+I created a class `Detector` (in `detector.py`) to keep track of most recent records (`detector.heatmap_recent`, for exampe).
 
 I recorded the positions of positive detections in each frame of the video.  From the positive detections I created a heatmap and then thresholded that map to identify vehicle positions. 
 

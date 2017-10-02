@@ -25,11 +25,11 @@ class Detector():
 
         # sliding window parameters
         self.x_start_stop = [[100, self.img_shape[1]],
-        					[200, self.img_shape[1]],
+                            [200, self.img_shape[1]],
                             
                             [300, self.img_shape[1]]]
         self.y_start_stop = [[500, 656],
-        					[400, 630],
+                            [400, 630],
                             
                             [350, 550],]
                             
@@ -47,7 +47,7 @@ class Detector():
         self.cell_per_block = 2
         
         # Post Processing parameters
-        self.threshold = 14 # heatmap threshold
+        self.threshold = 12 # heatmap threshold
         self.num_cars = 0
         self.frames_to_collect = 7
         self.heatmap = np.zeros(self.img_shape).astype(np.float)
