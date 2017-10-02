@@ -26,17 +26,15 @@ class Detector():
         # sliding window parameters
         self.x_start_stop = [[100, self.img_shape[1]],
         					[200, self.img_shape[1]],
-                            [200, self.img_shape[1]],
-                            [200, self.img_shape[1]],
-                            [400, self.img_shape[1]]]
-        self.y_start_stop = [[450, 656],
+                            
+                            [300, self.img_shape[1]]]
+        self.y_start_stop = [[500, 656],
         					[400, 630],
-                            [400, 600],
-                            [400, 550],
-                            [350, 500],]
-    
-        self.scales = [1.8, 1.5, 1.1, 0.9, 0.8]
-        self.cells_per_step = 3
+                            
+                            [350, 550],]
+                            
+        self.scales = [1.8, 1.5, 1]
+        self.cells_per_step = 2
 
         # image features  parameters
         self.spatial_size = (32, 32)
@@ -49,9 +47,9 @@ class Detector():
         self.cell_per_block = 2
         
         # Post Processing parameters
-        self.threshold = 10 # heatmap threshold
+        self.threshold = 14 # heatmap threshold
         self.num_cars = 0
-        self.frames_to_collect = 5
+        self.frames_to_collect = 7
         self.heatmap = np.zeros(self.img_shape).astype(np.float)
         self.heatmap_recent = []
         self.heatmap_mean = np.zeros(self.img_shape).astype(np.float)
@@ -233,4 +231,57 @@ class Detector():
         return img
 
 
+    def window_grids(self, img, ystart, ystop, xstart, xstop, scale):
+        pix_per_cell = self.pix_per_cell
+        cell_per_block = self.cell_per_block
+        cells_per_step = self.cells_per_step
+        orient = self.orient
+        svc = self.svc
+        X_scaler = self.X_scaler
+        spatial_size = self.spatial_size
+        hist_bins = self.hist_bins
 
+        draw_img = np.copy(img)
+        img = img.astype(np.float32)/255
+        
+        img_tosearch = img[ystart:ystop, xstart:xstop,:]
+        
+        ctrans_tosearch = self.convert_color(img_tosearch, conv=self.conv_color)
+        ch1 = ctrans_tosearch[:,:,0]
+        # Define blocks and steps as above
+        nxblocks = (ch1.shape[1] // pix_per_cell) - cell_per_block + 1
+        nyblocks = (ch1.shape[0] // pix_per_cell) - cell_per_block + 1 
+        nfeat_per_block = orient*cell_per_block**2
+        
+        # 64 was the orginal sampling rate, with 8 cells and 8 pix per cell
+        window = 64
+        nblocks_per_window = (window // pix_per_cell) - cell_per_block + 1
+        # Instead of overlap ratio, define how many cells to step, use cells_per_step
+        nxsteps = (nxblocks - nblocks_per_window) // cells_per_step
+        nysteps = (nyblocks - nblocks_per_window) // cells_per_step
+        
+        # Compute individual channel HOG features for the entire image
+
+        for xb in range(nxsteps):
+            for yb in range(nysteps):
+                ypos = yb*cells_per_step
+                xpos = xb*cells_per_step
+                # Extract HOG for this patch
+                
+                xleft = xpos*pix_per_cell
+                ytop = ypos*pix_per_cell
+
+                # Extract the image patch
+                subimg = cv2.resize(ctrans_tosearch[ytop:ytop+window, xleft:xleft+window], (64,64))
+              
+               
+                xbox_left = np.int(xleft*scale)
+                ytop_draw = np.int(ytop*scale)
+                win_draw = np.int(window*scale)
+                cv2.rectangle(draw_img,
+                                  (xbox_left+xstart, ytop_draw+ystart),
+                                  (xbox_left+win_draw+xstart,ytop_draw+win_draw+ystart),
+                                  (0,0,255),6) 
+                
+
+        return  draw_img
