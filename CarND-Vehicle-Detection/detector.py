@@ -24,16 +24,18 @@ class Detector():
         self.X_scaler = None #pickle.load(open('X_scaler.p', 'rb'))
 
         # sliding window parameters
-        self.x_start_stop = [[200, self.img_shape[1]],
+        self.x_start_stop = [[100, self.img_shape[1]],
+        					[200, self.img_shape[1]],
                             [200, self.img_shape[1]],
                             [200, self.img_shape[1]],
                             [400, self.img_shape[1]]]
-        self.y_start_stop = [[400, 656],
+        self.y_start_stop = [[450, 656],
+        					[400, 630],
                             [400, 600],
-                            [450, 550],
-                            [400, 500],]
+                            [400, 550],
+                            [350, 500],]
     
-        self.scales = [1.5, 1.1, 0.9, 0.8]
+        self.scales = [1.8, 1.5, 1.1, 0.9, 0.8]
         self.cells_per_step = 3
 
         # image features  parameters
@@ -51,10 +53,7 @@ class Detector():
         self.num_cars = 0
         self.frames_to_collect = 5
         self.heatmap = np.zeros(self.img_shape).astype(np.float)
-        self.heatmap_recent = np.zeros(
-                            (self.img_shape[0], 
-                            self.img_shape[1], 
-                            self.frames_to_collect)).astype(np.float)
+        self.heatmap_recent = []
         self.heatmap_mean = np.zeros(self.img_shape).astype(np.float)
         
     def reset(self):
@@ -62,10 +61,7 @@ class Detector():
         self.num_frame = 0
         self.num_cars = 0
         self.heatmap = np.zeros(self.img_shape).astype(np.float)
-        self.heatmap_recent = np.zeros(
-                            (self.img_shape[0], 
-                            self.img_shape[1], 
-                            self.frames_to_collect)).astype(np.float)
+        self.heatmap_recent = []
         self.heatmap_mean = np.zeros(self.img_shape).astype(np.float)
 
     def multiple_window_sizes_search(self, img):
@@ -190,7 +186,7 @@ class Detector():
 
 
     def new_frame(self):
-    	self.heatmap = np.zeros(self.img_shape).astype(np.float)
+        self.heatmap = np.zeros(self.img_shape).astype(np.float)
 
     def add_heat(self, bbox_list):
         for box in bbox_list:
@@ -200,19 +196,14 @@ class Detector():
     
     def filter_false_positive(self):
         i = int(self.num_frame - 1) % self.frames_to_collect
-        self.heatmap_recent[:,:,i] = self.heatmap
-
-        if self.num_frame <= self.frames_to_collect:
-            self.heatmap_mean = (self.heatmap) * self.frames_to_collect
-
-        else: 
-            product_heatmap = np.ones(self.img_shape).astype(np.float)
-            sum_heatmap = np.zeros(self.img_shape).astype(np.float)
-            for j in range(self.frames_to_collect):
-                product_heatmap = product_heatmap * self.heatmap_recent[:,:,j]
-                sum_heatmap = sum_heatmap + self.heatmap_recent[:,:,j]
         
-            self.heatmap_mean = (sum_heatmap)
+        if self.num_frame <= self.frames_to_collect:
+            self.heatmap_recent.append(self.heatmap)
+            self.heatmap_mean = self.heatmap * self.frames_to_collect
+          
+        else: 
+            self.heatmap_recent[i] = self.heatmap
+            self.heatmap_mean = sum(self.heatmap_recent)
 
 
     def apply_threshold(self):
