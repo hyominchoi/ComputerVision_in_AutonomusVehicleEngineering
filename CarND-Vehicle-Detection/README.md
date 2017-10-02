@@ -1,7 +1,8 @@
 
----
 
-** Vehicle Detection Project **
+
+**Vehicle Detection Project**
+--------------------------------------
 
 The goals / steps of this project are the following:
 
@@ -65,7 +66,7 @@ Ultimately I searched on four scales using HLS 3-channel HOG features plus histo
 ### Video Implementation
 
 #### 1. Provide a link to your final video output.  Your pipeline should perform reasonably well on the entire project video (somewhat wobbly or unstable bounding boxes are ok as long as you are identifying the vehicles most of the time with minimal false positives.)
-Here's a [link to my video result](./project_video.mp4)
+Here's a link to my video result: https://youtu.be/Y8ZW24tdE7g
 
 
 #### 2. Describe how (and identify where in your code) you implemented some kind of filter for false positives and some method for combining overlapping bounding boxes.
@@ -78,12 +79,9 @@ I then used `scipy.ndimage.measurements.label()` to identify individual blobs in
 
 Here's an example result showing the heatmap from a series of frames of video, the result of `scipy.ndimage.measurements.label()` and the bounding boxes then overlaid on the last frame of video:
 
-### Here are five consecutive frames and their corresponding heatmaps:
-
+### Here are six consecutive frames and their corresponding heatmaps:
 ![alt text][image5]
 
-### Here is the output of `scipy.ndimage.measurements.label()` on the integrated heatmap from all five frames:
-![alt text][image6]
 
 ### Here the resulting bounding boxes are drawn onto the last frame in the series:
 ![alt text][image7]
