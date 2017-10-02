@@ -9,7 +9,9 @@ from scipy.ndimage.measurements import label
 
 
 class Detector():
-
+	"""
+	This is a class that keep tracks of detected vehicles. 
+	"""
     def __init__(self):
 
         self.isCarDetected = False
@@ -55,6 +57,9 @@ class Detector():
         self.heatmap_mean = np.zeros(self.img_shape).astype(np.float)
         
     def reset(self):
+    	"""
+    	reset detection history
+    	"""
         self.isCarDetected = False
         self.num_frame = 0
         self.num_cars = 0
@@ -63,7 +68,10 @@ class Detector():
         self.heatmap_mean = np.zeros(self.img_shape).astype(np.float)
 
     def multiple_window_sizes_search(self, img):
-
+    	"""
+    	search for cars given an img. Use multiple window sizes
+    	specified by the variable self.scales.
+    	"""
         y_start_stop = self.y_start_stop
         x_start_stop = self.x_start_stop
         scales = self.scales
@@ -87,6 +95,10 @@ class Detector():
 
 
     def convert_color(self, img, conv):
+    	"""
+    	convert input img to a different color channel representation
+    	:param conv : specify the new color channel
+    	"""
         if conv == 'RGB2YCrCb':
             return cv2.cvtColor(img, cv2.COLOR_RGB2YCrCb)
         if conv == 'BGR2YCrCb':
@@ -99,6 +111,11 @@ class Detector():
             return cv2.cvtColor(img, cv2.COLOR_RGB2HSV)    
         
     def find_cars(self, img, ystart, ystop, xstart, xstop, scale):
+        """
+        Find cars. This function is adapted from Udacity class material.
+        For a given `img`, specify the area of interest and look for 
+        vehicles within the area.
+        """
         pix_per_cell = self.pix_per_cell
         cell_per_block = self.cell_per_block
         cells_per_step = self.cells_per_step
@@ -184,15 +201,24 @@ class Detector():
 
 
     def new_frame(self):
+    	"""
+    	reset frame information.
+    	"""
         self.heatmap = np.zeros(self.img_shape).astype(np.float)
 
     def add_heat(self, bbox_list):
+    	"""
+    	construct heat map based on raw detection results
+    	"""
         for box in bbox_list:
             # Add += 1 for all pixels inside each bbox
             # Assuming each "box" takes the form ((x1, y1), (x2, y2))
             self.heatmap[box[0][1]:box[1][1], box[0][0]:box[1][0]] += 1
     
     def filter_false_positive(self):
+    	"""
+    	take the sum of most recent frame heatmaps
+    	"""
         i = int(self.num_frame - 1) % self.frames_to_collect
         
         if self.num_frame <= self.frames_to_collect:
@@ -205,15 +231,24 @@ class Detector():
 
 
     def apply_threshold(self):
-        # Zero out pixels below the threshold
-        # self.heatmap_mean = self.heatmap
+    	"""
+        Zero out pixels below the threshold.
+        If a box appears only few times in most recent frames,
+        those pixel values would be below the threshold.
+        """
         self.heatmap_mean[self.heatmap_mean <= self.threshold] = 0
         self.heatmap_mean = np.clip(self.heatmap_mean, 0, 255)
 
     def apply_label(self):
+    	"""
+    	apply scipy.label function
+    	"""
         self.labels, self.num_cars = label(self.heatmap_mean)
 
     def draw_labeled_bboxes(self, img):
+    	"""
+    	draw the labeled car boxes on top of the original image
+    	"""
         labels = self.labels
         # Iterate through all detected cars
         for car_number in range(1, self.num_cars + 1):
@@ -232,6 +267,10 @@ class Detector():
 
 
     def window_grids(self, img, ystart, ystop, xstart, xstop, scale):
+        """
+        Show slding windows that this object is using to detect
+        vehicles
+        """
         pix_per_cell = self.pix_per_cell
         cell_per_block = self.cell_per_block
         cells_per_step = self.cells_per_step
