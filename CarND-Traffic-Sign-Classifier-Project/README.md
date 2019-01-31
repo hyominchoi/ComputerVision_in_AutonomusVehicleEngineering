@@ -1,7 +1,6 @@
 # Traffic Sign Recognition
 Project summary: 
 Build and train a traffic sign image classifier `LeNet()` with `TensorFlow`.
-
 ---
 **Build a Traffic Sign Recognition Project**
 
@@ -27,8 +26,8 @@ The goals / steps of this project are the following:
 [image10]: ./Dataset_label_counts.png "Data set label counts"
 [image11]: ./Dataset_label_density.png "Data set label distribution"
 
-## Rubric Points
-### Here I will consider the [rubric points](https://review.udacity.com/#!/rubrics/481/view) individually and describe how I addressed each point in my implementation.  
+### Rubric Points:
+Here I will consider the [rubric points](https://review.udacity.com/#!/rubrics/481/view) individually and describe how I addressed each point in my implementation.  
 
 ---
 ### Data Set Summary & Exploration
