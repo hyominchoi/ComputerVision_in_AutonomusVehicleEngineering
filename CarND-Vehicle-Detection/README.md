@@ -1,5 +1,5 @@
 # Vehicle Detection Project
-Project Summary: Build a pipepline that processes video data and detect cars.
+Project Summary: Build a pipepline that processes video data and detects cars.
 
 ---
 
