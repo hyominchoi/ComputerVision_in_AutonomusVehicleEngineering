@@ -1,8 +1,7 @@
-# **Finding Lane Lines on the Road** 
----
+# Finding Lane Lines on the Road
 Project summary: 
 Using **Hough Transform** and **Canny Edge Detection** algorithm, we detect lane lines in any given image file.
----
+
 Udacity project rubrics :
 * Make a pipeline that finds lane lines on the road
 * Reflect on your work in a written report
