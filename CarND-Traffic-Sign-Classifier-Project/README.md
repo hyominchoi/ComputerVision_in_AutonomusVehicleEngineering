@@ -28,9 +28,8 @@ The goals / steps of this project are the following:
 
 ### Rubric Points:
 Here I will consider the [rubric points](https://review.udacity.com/#!/rubrics/481/view) individually and describe how I addressed each point in my implementation.  
-
 ---
-### Data Set Summary & Exploration
+### 1. Data Set Summary & Exploration
 
 I used the pandas library to calculate summary statistics of the traffic
 signs data set:
