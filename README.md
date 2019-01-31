@@ -6,9 +6,9 @@ In this term,  I learned and become fluent in applying Computer Vision and Deep 
  - [Project 1]: Finding Lane Lines on the Road
  - [Project 2]: Traffic Sign Classifier
  - [Project 3]: Behavioral Cloning
- - [Project 4]: Advanced Lane Finding. Here's a [link to my video result.](https://youtu.be/5uLRnO21Kq8)
+ - [Project 4]: Advanced Lane Finding. Here's [my video result available on YouTube.](https://youtu.be/5uLRnO21Kq8)
 
- - [Project 5]: Vehicle Detection and Tracking. Here's a link to my video result: https://youtu.be/5vDbt8N8XuQ
+ - [Project 5]: Vehicle Detection and Tracking. Here's [my video result available on YouTube.](https://youtu.be/5vDbt8N8XuQ)
 
 
 [project 1]:  <https://github.com/hyominchoi/ComputerVision_in_AutonomusVehicleEngineering/tree/master/CarND-LaneLines-P1>
