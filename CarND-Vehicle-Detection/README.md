@@ -1,8 +1,7 @@
+# Vehicle Detection Project
+Project Summary: Build a pipepline that processes video data and detect cars.
 
-
-
-**Vehicle Detection Project**
---------------------------------------
+---
 
 The goals / steps of this project are the following:
 
@@ -22,8 +21,8 @@ The goals / steps of this project are the following:
 [image6]: ./output_images/labels_map.png
 [image7]: ./output_images/output_bboxes.png
 
-## [Rubric](https://review.udacity.com/#!/rubrics/513/view) Points
-### Here I will consider the rubric points individually and describe how I addressed each point in my implementation.  
+### [Rubric](https://review.udacity.com/#!/rubrics/513/view) Points
+Here I will consider the rubric points individually and describe how I addressed each point in my implementation.  
 
 ---
 
