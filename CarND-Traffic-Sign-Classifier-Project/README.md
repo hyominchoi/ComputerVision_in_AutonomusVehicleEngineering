@@ -1,8 +1,8 @@
 # Traffic Sign Recognition
-
+Project summary: 
+Build and train a traffic sign image classifier `LeNet()` with `TensorFlow`.
 
 ---
-
 **Build a Traffic Sign Recognition Project**
 
 The goals / steps of this project are the following:
