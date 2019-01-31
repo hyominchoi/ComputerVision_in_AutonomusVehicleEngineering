@@ -1,5 +1,6 @@
-# **Behavioral Cloning** 
-
+# Behavioral Cloning
+Project Summary: 
+Build a pipeline that processes video data. Train a CNN model using `Keras` with GPU on AWS and successfully predict steering angles from new images.
 ---
 
 The goals / steps of this project are the following:
@@ -23,9 +24,10 @@ The goals / steps of this project are the following:
 ###Here I will consider the [rubric points](https://review.udacity.com/#!/rubrics/432/view) individually and describe how I addressed each point in my implementation.  
 
 ---
-### Files Submitted & Code Quality
 
-#### 1. Submission includes all required files and can be used to run the simulator in autonomous mode
+### Files Submitted to Udacity & Code Quality 
+
+#### 1. List of all required files. They can be used to run the simulator in autonomous mode
 
 My project includes the following files:
 * model.py containing the script to create and train the model
@@ -33,13 +35,13 @@ My project includes the following files:
 * model.h5 containing a trained convolution neural network 
 * writeup_report.md or writeup_report.pdf summarizing the results
 
-#### 2. Submission includes functional code
+#### 2. Functional Codes
 Using the Udacity provided simulator and my drive.py file, the car can be driven autonomously around the track by executing 
 ```sh
 python drive.py model.h5
 ```
 
-#### 3. Submission code is usable and readable
+#### 3. Check if code is usable and readable
 
 The model.py file contains the code for training and saving the convolution neural network. The file shows the pipeline I used for training and validating the model, and it contains comments to explain how the code works.
 Once parameters are modified appropriately, one can train and save the model by executing
