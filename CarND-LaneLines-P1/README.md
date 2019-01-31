@@ -1,59 +1,45 @@
 # **Finding Lane Lines on the Road** 
-
-
 ---
-
-** Finding Lane Lines on the Road**
-
-The goals / steps of this project are the following:
+Project summary: 
+Using **Hough Transform** and **Canny Edge Detection** algorithm, we detect lane lines in any given image file.
+---
+Udacity project rubrics :
 * Make a pipeline that finds lane lines on the road
 * Reflect on your work in a written report
-
-
-[//]: # (Image References)
-
-[image1]: ./examples/grayscale.jpg "Grayscale"
-
 ---
-
-### Reflection
-
-### 1. Describe your pipeline. As part of the description, explain how you modified the draw_lines() function.
+### 1. Description of the pipeline and algorithm. 
 
 My pipeline consisted of 7 steps. 
 
-Apply color filters so that we only look at colors of interest such as yellow or white. 
+1) Apply color filters so that we only look at colors of interest such as yellow or white. 
 
-Second, convert the images to grayscale.
+2) Second, convert the images to grayscale.
 
-Apply gaussian blur to smooth out the image.
+3) Apply gaussian blur to smooth out the image.
 
-Next, use canny edge detection algorithm to detect the edges of objects.
+4) Next, use canny edge detection algorithm to detect the edges of objects.
 
-Define a 4-sided area of interest using polygon function.
+5) Define a 4-sided area of interest using polygon function.
 
-Find out lines using Hough Transform.
+6) Find out lines using Hough Transform.
 
-Use linear regression to obtain smoothly connected lines.
+7) Use linear regression to obtain smoothly connected lines.
 
-
-In order to draw a single line on the left and right lanes, I used numpy linear
-regression function before draw lines. To be more specific, I didn't use draw_lines(). I wrote regression_line() and extrapolate_line(), which are used in lieu of draw_lines(). 
-
-
-### 2. Identify potential shortcomings with your current pipeline
+In order to draw a single line on the left and right lanes, I used *numpy linear
+regression function* ,`numpy.linalg.lstsq()`, before draw lines. I wrote `regression_line()` and `extrapolate_line()`.
 
 
-One potential shortcoming would be what would happen when the vehicle is on more curved and less straight road. 
+### 2. Potential Shortcomings with my current pipeline
 
-Another shortcoming could be caused by changes in camera focal point. 
-If the camera's position is changed so that the focal point moves up, for example, then some parameters used in pipeline() need to be manually changed.
+ - When the vehicle is on a more curved road, the current method would not work very accurately. 
+
+ - Another shortcoming could be caused by changes in camera focal point.  If the camera's position is changed so that the focal point moves up, for example, then some parameters used in `pipeline()` need to be manually changed.
 
 
-### 3. Suggest possible improvements to your pipeline
+### 3. Suggestion of possible improvements to my current pipeline
 
-To let pipeline handle curvy lanes, we should not use linear regression for y = mx + c. We can modify it to y = ax^2 + bx + c, for example. 
+1) To let pipeline handle curvy lanes, we should not use linear regression for `y = mx + c`. We can modify it to `y = ax^2 + bx + c` , for example. 
 
-To prevent very abrupt changes, or discontinuity of projected lines, we can use line points from current and previous frames together and obtain smoothing effect.
+2) To prevent very abrupt changes, or discontinuity of projected lines, we can use line points from current and previous frames together and obtain smoothing effect.
 
-Another potential improvement could be to build a function that detects camera's focal point using first few frames so that the relevant parameters get automatically adjusted whenever the position and/or angle of camera is changed.
+3) Another potential improvement could be to build a function that detects camera's focal point using first few frames so that the relevant parameters get automatically adjusted whenever the position and/or angle of camera is changed.
