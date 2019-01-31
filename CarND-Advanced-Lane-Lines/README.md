@@ -1,4 +1,6 @@
 ## Advanced Lane Finding Project
+Project Summary: 
+Detect lane lines and curves in a video using *perspective transform* and *gradient threshholding* with OpenCV.
 ---
 
 The goals / steps of this project are the following:
@@ -22,9 +24,8 @@ The goals / steps of this project are the following:
 [image6]: ./examples/example_final_output.jpg "Output"
 [video1]: ./project_video.mp4 "Video"
 
-## [Rubric](https://review.udacity.com/#!/rubrics/571/view) Points
-
-### Here I will consider the rubric points individually and describe how I addressed each point in my implementation.  
+### [Rubric](https://review.udacity.com/#!/rubrics/571/view) Points
+Here I will consider the rubric points individually and describe how I addressed each point in my implementation.  
 
 ---
 
